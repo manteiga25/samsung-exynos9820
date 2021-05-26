@@ -1,0 +1,40 @@
+name: Build
+
+on: [push]
+
+env:
+  TOOLCHAIN: cruel
+  INSTALLER: yes
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [ "G970F,G973F,G975F", "N970F,N975F" ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Kernel Configure
+        run: |
+          set -e -o pipefail
+          ./cruelbuild config                    \
+                       model=${{ matrix.model }} \
+                       name="Cruel-v4.2"         \
+                       toolchain=$TOOLCHAIN      \
+                       +magisk                   \
+                       +nohardening              \
+                       +ttl                      \
+                       +wireguard                \
+                       +cifs                     \
+                       +sdfat                    \
+                       +ntfs                     \
+                       +force_dex_wqhd           \
+                       +morosound                \
+                       +boeffla_wl_blocker       \
